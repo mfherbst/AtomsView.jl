@@ -12,8 +12,8 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 ASEconvert = "0.1.4"
+AtomsBase = "0.3"
 Bio3DView = "0.1.4"
-PythonCall = ""
 PythonCall = "0.9"
 Unitful = "1"
 julia = "1.6"
