@@ -2,8 +2,6 @@
 # This file is explicitly *not* published under the MIT licence,
 # but under the GPL version 3.0.
 
-, so is this file.
-
 import numpy as np
 
 from ase import Atoms
