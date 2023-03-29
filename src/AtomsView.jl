@@ -23,13 +23,22 @@ function xyzstring(system::AbstractSystem)
 end
 
 
+function default_html_style(system::AbstractSystem{D}) where {D}
+    if bounding_box(system) == infinite_box(D)  # Infinite system
+        Style("stick")
+    else
+        Style("sphere")
+    end
+end
+
+
 """
 Produce some text/html code which allows to interactively view the system.
 Currently uses Bio3DView and some kwargs can be used to customise the representation.
 Note that the backend as well as interface is likely going to change in the future.
 """
 function visualize_structure(system::AbstractSystem, ::MIME"text/html";
-                             style=Style("sphere"), kwargs...)
+                             style=default_html_style(system), kwargs...)
     @assert !(:html in keys(kwargs))
     htmlstring = viewstring(xyzstring(system), "xyz"; html=true, style, kwargs...)
 
@@ -52,6 +61,6 @@ function visualize_structure(system::AbstractSystem, ::MIME"text/plain")
 end
 visualize_structure(system::AbstractSystem) = visualize_structure(system, MIME("text/plain"))
 
-# TODO Add visualize_structure functions for the image/png mime type
+# TODO Add visualize_structure functions for the "image/png" mime type
 
 end
