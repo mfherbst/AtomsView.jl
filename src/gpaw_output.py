@@ -1,8 +1,6 @@
 # Note this file is taken from GPAW (file output.py).
 # This file is explicitly *not* published under the MIT licence,
-# but under the GPL version 3.0.
-
-, so is this file.
+# but under the GPL version 3.0--so is this file.
 
 import numpy as np
 
