@@ -11,6 +11,11 @@ PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
+ASEconvert = "0.1.4"
+Bio3DView = "0.1.4"
+PythonCall = ""
+PythonCall = "0.9"
+Unitful = "1"
 julia = "1.6"
 
 [extras]
