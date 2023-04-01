@@ -10,7 +10,7 @@ export visualize_structure
 Fallback visualisation function. Returns nothing.
 """
 visualize_structure(system::AbstractSystem, ::Any; kwargs...) = nothing
-visualize_structure(system::AbstractSystem, ::MIME"text/plain") = ascii_structure(system)
+visualize_structure(system::AbstractSystem, ::MIME"text/plain") = visualize_ascii(system)
 visualize_structure(system::AbstractSystem) = visualize_structure(system, MIME("text/plain"))
 
 
