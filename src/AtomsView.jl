@@ -2,7 +2,6 @@ module AtomsView
 using AtomsBase
 using Bio3DView
 using Unitful
-include("ascii_structure.jl")
 
 export visualize_structure
 
