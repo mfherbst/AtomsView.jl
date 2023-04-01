@@ -2,53 +2,7 @@ using UnitfulAtomic
 using LinearAlgebra
 
 
-function canvas_sizes_projector(::Val{3}, box)
-    scaling = 1.3
-    sizes  = nothing
-    canvas = nothing
-    while scaling > 0.1
-        sizes = round.(Int, scaling .* box .* (1.0, 0.25, 0.5))
-        canvas = fill(' ', sizes[1] + sizes[2] + 4, sizes[2] + sizes[3] + 1)
-        all(size(canvas) .≤ 100) && break
-        scaling *= 0.9
-    end
-
-    δ = sizes ./ box
-    projector = [δ[1] δ[2]    0;
-                 0    δ[2] δ[3]]
-
-    (; canvas, sizes, projector)
-end
-
-function canvas_sizes_projector(::Val{2}, box)
-    scaling = 1.3
-    sizes  = nothing
-    canvas = nothing
-    while scaling > 0.1
-        sizes = round.(Int, scaling .* [box[1], 0.0, box[2]])
-        canvas = fill(' ', sizes[1] + sizes[2] + 4, sizes[2] + sizes[3] + 1)
-        all(size(canvas) .≤ 100) && break
-        scaling *= 0.9
-    end
-    projector = Diagonal([sizes[1] sizes[3]] ./ box)
-    (; canvas, sizes, projector)
-end
-
-function canvas_sizes_projector(::Val{1}, box)
-    scaling = 1.3
-    sizes  = nothing
-    canvas = nothing
-    while scaling > 0.1
-        sizes = round.(Int, scaling .* [box[1], 0.0, 0.0])
-        canvas = fill(' ', sizes[1] + sizes[2] + 4, sizes[2] + sizes[3] + 1)
-        all(size(canvas) .≤ 100) && break
-        scaling *= 0.9
-    end
-    projector = Diagonal(sizes[1:1] ./ box)
-    (; canvas, sizes, projector)
-end
-
-
+ascii_structure(::AbstractSystem{1}) = nothing
 function ascii_structure(system::AbstractSystem{D}) where {D}
     # Heavily inspired by the ascii art plot algorithm of GPAW
     # See output.py in the GPAW sources
@@ -79,8 +33,29 @@ function ascii_structure(system::AbstractSystem{D}) where {D}
     normpos = [@. box * mod((shift + austrip(p)) / box, 1.0)
                for p in position(system)]
 
-    canvas, sizes, projector = canvas_sizes_projector(Val(D), box)
-    sx, sy, sz = sizes
+    scaling = 1.3
+    sx = nothing
+    sy = nothing
+    sz = nothing
+    canvas = nothing
+    while scaling > 0.1
+        if D == 2
+            scaled = scaling .* [box[1], 0.0, box[2]]
+        else
+            scaled = scaling .* box .* (1.0, 0.25, 0.5)
+        end
+
+        sx, sy, sz = round.(Int, scaled)
+        canvas = fill(' ', sx + sy + 4, sy + sz + 1)
+        all(size(canvas) .≤ 100) && break
+        scaling *= 0.9
+    end
+
+    if D == 2
+        projector = Diagonal([sx sz] ./ box)
+    elseif D == 3
+        projector = [sx sy 0; 0 sy sz] * Diagonal(1 ./ box)
+    end
     pos2d = [1 .+ round.(Int, projector * p .+ eps(Float64)) for p in normpos]
 
     # Draw box onto canvas
