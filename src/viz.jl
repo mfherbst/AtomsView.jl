@@ -1,11 +1,7 @@
-function draw_system(centers, r; bb_visible = true)
+function draw_system!(fig, ax, centers, r; colors = nothing, bb_visible = true)
     bb_o = Observable(bb_visible)
 
-    fig = Figure()
-    scene = Scene(camera = cam3d!, clear = false)
-    ax = Axis3(fig[1, 1], aspect = :data)
-    
-    cols = rand(keys(Colors.color_names), length(centers))
+    cols = colors
     scs = []
     alphas = []
     for (center, color) in zip(centers, cols)
@@ -122,4 +118,26 @@ function draw_system(centers, r; bb_visible = true)
 
 
     fig
+end
+
+function draw_system(system::AbstractSystem, r; colors = nothing, bb_visible = true)
+    positions = map(x -> map(y -> y.val, x), position(system))
+    cols = get_colors(system, colors)
+    fig = Figure()
+    ax = Axis3(fig[1, 1], aspect = :data)
+    draw_system!(fig, ax, positions, r; colors = cols, bb_visible = bb_visible)
+end
+
+function get_colors(system, colors::Nothing = nothing)
+    els = elements[atomic_symbol(system)]
+    map(x -> x.cpk_hex, els)
+end
+
+function get_colors(system, colors)
+    @assert length(system) == length(colors)
+    return colors
+end
+
+function get_colors(system, colors::Union{Symbol, String})
+    return fill(colors, length(system))
 end

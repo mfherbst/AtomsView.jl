@@ -5,6 +5,7 @@ using Unitful
 
 using Makie, GLMakie
 using Colors
+using PeriodicTable
 
 export visualize_structure
 
