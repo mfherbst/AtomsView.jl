@@ -7,7 +7,7 @@ using Unitful
     @testset "Run the code" begin
         atoms = [:Si => [0.0, -0.125, 0.0],
                  :C  => [0.125, 0.0, 0.0]]
-        box = [[10, 0.0, 0.0], [0.0, 5, 0.0], [0.0, 0.0, 7]]u"Å"
+        box = tuple([[10, 0.0, 0.0], [0.0, 5, 0.0], [0.0, 0.0, 7]]u"Å" ...)
         system = periodic_system(atoms, box; fractional=true)
 
         visualize_structure(system)

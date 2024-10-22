@@ -2,6 +2,7 @@ module AtomsView
 using AtomsBase
 using Bio3DView
 using Unitful
+AbstractSystem = AtomsBase.AbstractSystem
 
 export visualize_structure
 
@@ -15,7 +16,7 @@ visualize_structure(system::AbstractSystem) = visualize_structure(system, MIME("
 
 
 function default_html_style(system::AbstractSystem{D}) where {D}
-    if bounding_box(system) == infinite_box(D)  # Infinite system
+    if cell(system) isa IsolatedCell
         Style("stick")
     else
         Style("sphere")
