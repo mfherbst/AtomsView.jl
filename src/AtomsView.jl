@@ -4,6 +4,10 @@ using Bio3DView
 using Unitful
 AbstractSystem = AtomsBase.AbstractSystem
 
+using Makie, GLMakie
+using Colors
+using PeriodicTable
+
 export visualize_structure
 
 
@@ -59,5 +63,8 @@ function visualize_structure(system::AbstractSystem, ::MIME"text/html";
 end
 
 # TODO Add visualize_structure functions for the "image/png" mime type
+
+include("viz.jl")
+export draw_system
 
 end
