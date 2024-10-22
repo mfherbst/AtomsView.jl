@@ -32,7 +32,7 @@ function xyzstring(system::AbstractSystem{D}) where {D}
     str = "$(length(system))\n"
     for atom in system
         pos = zeros(3)
-        pos[1:D] .= ustrip.(u"Å", position(atom, :))
+        pos[1:D] .= ustrip.(u"Å", position(atom))
         str *= "\n$(atomic_symbol(atom))  $(pos[1])  $(pos[2])  $(pos[3])"
     end
 
