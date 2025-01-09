@@ -64,10 +64,12 @@ system = bulk(:Cu) * (4,4,4)
 
 fig = Figure()
 draw_system!(fig[1,1], system)
-display(fig)
+
 
 # draw system without axes
-draw_system(fig[1,2], system; hide_axes=true)
+draw_system!(fig[1,2], system; hide_axes=true)
+
+display(fig)
 ```
 """
 function draw_system!(fig::Union{GridPosition,GridSubposition}, sys; kwords...)
