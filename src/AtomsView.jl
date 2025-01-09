@@ -13,7 +13,6 @@ export draw_system!
 export visualize_structure
 export draw_trajectory
 export draw_trajectory!
-export trajectory_controls!
 
 
 include("vdw_data.jl")

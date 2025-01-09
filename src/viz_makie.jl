@@ -7,7 +7,15 @@ You need to load Makie backend for visualisation to work.
 
 `kwords` are passed to Makie to control drawing.
 
-You can control 
+See also `draw_system!` and `draw_trajectory`.
+
+# Kwords
+
+- `draw_cell=true`    : 
+- `cell_color=:cyan`  :
+- `scale=1.0`         : Scale atom sizes
+- `hide_axes=false`   : hide x-,y- and z-axes
+- any kword suported by `Makie.mesh`
 
 # Examples
 ```julia
@@ -23,15 +31,44 @@ draw_system(system; draw_cell=true, cell_color=:cyan, scale=1.0)
 ```
 """
 function draw_system(sys; kwords...)
-    fig = Figure(size = (1280, 720))
+    fig = Figure(size = (1000, 1000))
     draw_system!(fig[1,1], sys; kwords...)
     return fig
 end
 
 """
+    draw_system!(axis::Axis3, sys; kwords...)
     draw_system!(fig::Union{GridPosition,GridSubposition}, system; kwords...)
 
-Draw AtomsBase system with Makie to given `GridPosition`.
+Draw AtomsBase to given `GridPosition` or `Axis3`.
+
+You can use this command to draw system on an existing figure.
+
+See also `draw_system`.
+
+# Kwords
+
+- `draw_cell=true`    : 
+- `cell_color=:cyan`  :
+- `scale=1.0`         : Scale atom sizes
+- `hide_axes=false`   : hide x-,y- and z-axes
+- any kword suported by `Makie.mesh`
+
+# Examples
+```julia
+using GLMakie
+using AtomsBuilder
+using AtomsView
+
+system = bulk(:Cu) * (4,4,4)
+
+fig = Figure()
+draw_system!(fig[1,1], system)
+display(fig)
+
+# draw system without axes
+draw_system(fig[1,2], system; hide_axes=true)
+```
 """
 function draw_system!(fig::Union{GridPosition,GridSubposition}, sys; kwords...)
     axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
@@ -91,6 +128,40 @@ end
 
 ## Trajectory vizualisations
 
+"""
+    draw_trajectory(traj::AbstractVector; kwargs...)
+
+Draw trajectory with Makie.
+You need to load Makie backend for visualisation to work.
+
+`kwords` are passed to Makie to control drawing.
+
+See also `draw_system` and `draw_trajectory!`.
+
+# Kwords
+
+- `draw_cell=true`    : draw cell
+- `cell_color=:cyan`  : cell color
+- `scale=1.0`         : Scale atom sizes
+- `hide_axes=false`   : hide x-,y- and z-axes
+- any kword suported by `Makie.mesh`
+
+# Examples
+```julia
+using GLMakie
+using AtomsBase
+using AtomsBuilder
+using AtomsView
+
+traj = map( 1:10 ) do d 
+    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
+end
+draw_trajectory(traj)
+
+# draw trajectory with cell
+draw_trajectory(traj; draw_cell=true)
+```
+"""
 function draw_trajectory(traj::AbstractVector; kwargs...)
     fig = Figure(size = (1000, 1000))
     sfig, i = draw_trajectory!(fig[1,1], traj; kwargs...)
@@ -98,10 +169,51 @@ function draw_trajectory(traj::AbstractVector; kwargs...)
     return fig
 end
 
+"""
+    draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::AbstractVector; kwargs...)
+
+Draw trajectory with Makie.
+You need to load Makie backend for visualisation to work.
+
+`kwords` are passed to Makie to control drawing.
+
+See also `draw_system` and `draw_trajectory!`.
+
+# Kwords
+
+- `draw_cell=true`    : draw cell
+- `cell_color=:cyan`  : cell color
+- `scale=1.0`         : Scale atom sizes
+- `hide_axes=false`   : hide x-,y- and z-axes
+- any kword suported by `Makie.mesh`
+
+# Examples
+```julia
+using GLMakie
+using AtomsBase
+using AtomsBuilder
+using AtomsView
+
+traj = map( 1:10 ) do d 
+    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
+end
+
+fig = Figure()
+
+# draw trajectory 
+fig_11, i = draw_trajectory!(fig[1,1], traj; draw_cell=true, hide_axes=true)
+
+# show figure
+display(fig)
+
+# set trajectory frame to 7
+i[] = 7
+```
+"""
 function draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::AbstractVector; kwargs...)
     axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
     i = Observable{Int}(1)
-    draw_system!(axs, traj[1])
+    draw_system!(axs, traj[i[]]; kwargs...)
     on( i ) do i
         empty!(axs)
         draw_system!(axs, traj[i]; kwargs...)
@@ -109,6 +221,9 @@ function draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::Abstra
     return fig, i
 end
 
+# Draw control slider for trajectory draw.
+# This is experimental and might not work that well.
+# In the future this could be improved
 function trajectory_controls!(fig::Union{GridPosition,GridSubposition}, i::Observable, max_value::Int)
     sl = SliderGrid(
         fig,
