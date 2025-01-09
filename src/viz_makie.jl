@@ -1,14 +1,46 @@
 
+"""
+    draw_system(sys; kwords...)
 
+Draw AtomsBase system with Makie.
+You need to load Makie backend for visualisation to work.
+
+`kwords` are passed to Makie to control drawing.
+
+You can control 
+
+# Examples
+```julia
+using GLMakie
+using AtomsBuilder
+using AtomsView
+
+system = bulk(:Cu) * (4,4,4)
+draw_system(system)
+
+# draw cell
+draw_system(system; draw_cell=true, cell_color=:cyan, scale=1.0)
+```
+"""
 function draw_system(sys; kwords...)
     fig = Figure(size = (1280, 720))
-    return draw_system!(fig, fig[1,1], sys; kwords...)
+    draw_system!(fig[1,1], sys; kwords...)
+    return fig
 end
 
-function draw_system!(f, fig, sys; draw_cell=false, cell_color=:cyan, scale=1.0, kwords...)
-    @argcheck scale > 0
-    axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
+"""
+    draw_system!(fig::Union{GridPosition,GridSubposition}, system; kwords...)
 
+Draw AtomsBase system with Makie to given `GridPosition`.
+"""
+function draw_system!(fig::Union{GridPosition,GridSubposition}, sys; kwords...)
+    axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
+    draw_system!(axs, sys; kwords...)
+    return fig
+end
+
+function draw_system!(axis::Axis3, sys; hide_axes=false, draw_cell=false, cell_color=:cyan, scale=1.0, kwords...)
+    @argcheck scale > 0
     data = map( sys ) do at
         r = position(at)
         point = Point3f( ustrip.(u"Å", r) )
@@ -29,7 +61,7 @@ function draw_system!(f, fig, sys; draw_cell=false, cell_color=:cyan, scale=1.0,
     end
 
     foreach( data ) do (sphere, color)
-        mesh!(fig, sphere; color=color, kwords...)
+        mesh!(axis, sphere; color=color, kwords...)
     end
 
     if draw_cell
@@ -40,13 +72,50 @@ function draw_system!(f, fig, sys; draw_cell=false, cell_color=:cyan, scale=1.0,
         c = Point3f( ustrip.(u"Å", abc[3]) )
         l1 = [origin, a, a+b, b, origin]
         l2 = [c, a+c, a+b+c, b+c, c]
-        lines!(fig, l1; color=cell_color)
-        lines!(fig, l2; color=cell_color)
-        lines!(fig, [origin, c]; color=cell_color)
-        lines!(fig, [b, b+c]; color=cell_color)
-        lines!(fig, [a, a+c]; color=cell_color)
-        lines!(fig, [a+b, a+b+c]; color=cell_color)
+        lines!(axis, l1; color=cell_color)
+        lines!(axis, l2; color=cell_color)
+        lines!(axis, [origin, c]; color=cell_color)
+        lines!(axis, [b, b+c]; color=cell_color)
+        lines!(axis, [a, a+c]; color=cell_color)
+        lines!(axis, [a+b, a+b+c]; color=cell_color)
     end
 
-    return f
+    if hide_axes
+        hidespines!(axis)
+        hidedecorations!(axis)
+    end
+
+    return axis
+end
+
+
+## Trajectory vizualisations
+
+function draw_trajectory(traj::AbstractVector; kwargs...)
+    fig = Figure(size = (1000, 1000))
+    sfig, i = draw_trajectory!(fig[1,1], traj; kwargs...)
+    sl = trajectory_controls!(fig[2,1], i, length(traj))
+    return fig
+end
+
+function draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::AbstractVector; kwargs...)
+    axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
+    i = Observable{Int}(1)
+    draw_system!(axs, traj[1])
+    on( i ) do i
+        empty!(axs)
+        draw_system!(axs, traj[i]; kwargs...)
+    end
+    return fig, i
+end
+
+function trajectory_controls!(fig::Union{GridPosition,GridSubposition}, i::Observable, max_value::Int)
+    sl = SliderGrid(
+        fig,
+        (label = "Frame", range=1:max_value)
+    )
+    on(sl.sliders[1].value) do j
+        i[] = j
+    end
+    return sl
 end
