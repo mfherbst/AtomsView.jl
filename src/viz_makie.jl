@@ -84,16 +84,8 @@ function draw_system!(axis::Axis3, sys; hide_axes=false, draw_cell=false, cell_c
         r = position(at)
         point = Point3f( ustrip.(u"Å", r) )
         atom_number = atomic_number(at)
-        if 0 < atom_number < 110
-            col = parse(Colorant, elements[atom_number].cpk_hex)
-        else
-            col = parse(Colorant, elements[109].cpk_hex)
-        end
-        if 0 < atom_number < 100
-            vdw_rad = ustrip(u"Å", vdw_radius[atom_number] )
-        else
-            vdw_rad = 2.5
-        end
+        col = parse(Colorant, get(elements, atom_number, 109).cpk_hex )
+        vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
         ( sphere = Sphere( point, vdw_rad * scale ),
           color  = col,
         )
@@ -235,4 +227,118 @@ function trajectory_controls!(fig::Union{GridPosition,GridSubposition}, i::Obser
         i[] = j
     end
     return sl
+end
+
+
+## Recipe way
+
+
+Makie.@recipe(PlotSystem) do scene
+    Attributes(
+        aspect          = :data,
+        cell_color      = :black,
+        draw_cell       = false,
+        perspectiveness = 0.5,
+        scale           = 1.0,
+    )
+end
+
+# prefer 3D plot
+Makie.preferred_axis_type(::PlotSystem) = LScene
+
+
+function Makie.plot!(ps::PlotSystem{<:Tuple{AbstractSystem{3}}})
+
+    sys = ps[1]
+
+    # predefine atom data
+    vdw = Observable(Float64[])
+    colors = Observable(Colors.RGB[])
+    points = Observable(Point3f[])
+
+    # predefine cell lines
+    l1 = Observable(Point3f[])
+    l2 = Observable(Point3f[])
+    l3 = Observable(Point3f[])
+    l4 = Observable(Point3f[])
+
+    # this helper function will update our observables
+    function update_atoms(sys)
+
+        # clear the vectors inside the observables
+        empty!(vdw[])
+        empty!(colors[])
+        empty!(points[])
+
+        # update without triggering new draw
+        for i in 1:length(sys)
+            r = position(sys,i)
+            point = Point3f( ustrip.(u"Å", r) )
+            atom_number = atomic_number(sys,i)
+            col = parse(Colorant, get(elements, atom_number, 109).cpk_hex )
+            vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
+            push!(points[], point)
+            push!(vdw[], vdw_rad * ps.scale[])
+            push!(colors[], col)
+        end
+
+        # trigger new draw
+        points[] = points[]
+    end
+
+    function update_cell(sys, draw_cell, _)
+        empty!(l1[])
+        empty!(l2[])
+        empty!(l3[])
+        empty!(l4[])
+        if draw_cell
+            abc = cell_vectors(sys)
+            origin = zero(Point3f) 
+            a = Point3f( ustrip.(u"Å", abc[1]) )
+            b = Point3f( ustrip.(u"Å", abc[2]) )
+            c = Point3f( ustrip.(u"Å", abc[3]) )
+            l1[] = [origin, a, a+b, b, b+c, a+b+c]
+            l2[] = [b, origin, c, a+c, a+b+c, a+b]
+            l3[] = [a, a+c]
+            l4[] = [c, b+c]
+        else
+            # tringger draw to clean the cell
+            l1[] = l1[]
+            l2[] = l2[]
+            l3[] = l3[]
+            l4[] = l4[]
+        end
+    end
+
+    function update_sizes(scale)
+        empty!(vdw[])
+        for i in 1:length(sys[])
+            atom_number = atomic_number(sys[],i)
+            vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
+            push!(vdw[], vdw_rad * scale)
+        end
+        vdw[] = vdw[]
+    end
+
+
+    # connect `update_plot` so that it is called whenever
+    # `sys` or `scale` change
+    onany(update_atoms, sys)
+    onany(update_cell, sys, ps.draw_cell, ps.cell_color)
+    onany(update_sizes, ps.scale)
+
+    # then call it once manually populate `points`, `vdw` and `colors`
+    update_atoms(sys[])
+    update_cell(sys[], ps.draw_cell[], ps.cell_color[])
+
+    # draw atoms
+    meshscatter!(ps, points; markersize=vdw, color=colors)
+
+    # draw cell
+    lines!(ps, l1; color=ps.cell_color)
+    lines!(ps, l2; color=ps.cell_color)
+    lines!(ps, l3; color=ps.cell_color)
+    lines!(ps, l4; color=ps.cell_color)
+    
+    return ps
 end
