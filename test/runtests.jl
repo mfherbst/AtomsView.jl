@@ -22,10 +22,10 @@ using Unitful
             :H => [0.0, 0.0, 0.0]u"Å",
             :O => [0.0, 0.0, 1.0]u"Å"
         ])
-        f = draw_system(sys)
-        @test f isa Makie.Figure
-        f = draw_trajectory([sys, sys])
-        @test f isa Makie.Figure
+        fig, sc, pl = drawsystem(sys)
+        @test fig isa Makie.Figure
+        @test sc isa LScene
+        @test pl isa Plot
     end
 end
 

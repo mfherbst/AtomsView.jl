@@ -1,239 +1,7 @@
-
-"""
-    draw_system(sys; kwords...)
-
-Draw AtomsBase system with Makie.
-You need to load Makie backend for visualisation to work.
-
-`kwords` are passed to Makie to control drawing.
-
-See also `draw_system!` and `draw_trajectory`.
-
-# Kwords
-
-- `draw_cell=true`    : 
-- `cell_color=:cyan`  :
-- `scale=1.0`         : Scale atom sizes
-- `hide_axes=false`   : hide x-,y- and z-axes
-- any kword suported by `Makie.mesh`
-
-# Examples
-```julia
-using GLMakie
-using AtomsBuilder
-using AtomsView
-
-system = bulk(:Cu) * (4,4,4)
-draw_system(system)
-
-# draw cell
-draw_system(system; draw_cell=true, cell_color=:cyan, scale=1.0)
-```
-"""
-function draw_system(sys; kwords...)
-    fig = Figure(size = (1000, 1000))
-    draw_system!(fig[1,1], sys; kwords...)
-    return fig
-end
-
-"""
-    draw_system!(axis::Axis3, sys; kwords...)
-    draw_system!(fig::Union{GridPosition,GridSubposition}, system; kwords...)
-
-Draw AtomsBase to given `GridPosition` or `Axis3`.
-
-You can use this command to draw system on an existing figure.
-
-See also `draw_system`.
-
-# Kwords
-
-- `draw_cell=true`    : 
-- `cell_color=:cyan`  :
-- `scale=1.0`         : Scale atom sizes
-- `hide_axes=false`   : hide x-,y- and z-axes
-- any kword suported by `Makie.mesh`
-
-# Examples
-```julia
-using GLMakie
-using AtomsBuilder
-using AtomsView
-
-system = bulk(:Cu) * (4,4,4)
-
-fig = Figure()
-draw_system!(fig[1,1], system)
-
-
-# draw system without axes
-draw_system!(fig[1,2], system; hide_axes=true)
-
-display(fig)
-```
-"""
-function draw_system!(fig::Union{GridPosition,GridSubposition}, sys; kwords...)
-    axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
-    draw_system!(axs, sys; kwords...)
-    return fig
-end
-
-function draw_system!(axis::Axis3, sys; hide_axes=false, draw_cell=false, cell_color=:cyan, scale=1.0, kwords...)
-    @argcheck scale > 0
-    data = map( sys ) do at
-        r = position(at)
-        point = Point3f( ustrip.(u"Å", r) )
-        atom_number = atomic_number(at)
-        col = parse(Colorant, get(elements, atom_number, 109).cpk_hex )
-        vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
-        ( sphere = Sphere( point, vdw_rad * scale ),
-          color  = col,
-        )
-    end
-
-    foreach( data ) do (sphere, color)
-        mesh!(axis, sphere; color=color, kwords...)
-    end
-
-    if draw_cell
-        abc = cell_vectors(sys)
-        origin = zero(Point3f) 
-        a = Point3f( ustrip.(u"Å", abc[1]) )
-        b = Point3f( ustrip.(u"Å", abc[2]) )
-        c = Point3f( ustrip.(u"Å", abc[3]) )
-        l1 = [origin, a, a+b, b, origin]
-        l2 = [c, a+c, a+b+c, b+c, c]
-        lines!(axis, l1; color=cell_color)
-        lines!(axis, l2; color=cell_color)
-        lines!(axis, [origin, c]; color=cell_color)
-        lines!(axis, [b, b+c]; color=cell_color)
-        lines!(axis, [a, a+c]; color=cell_color)
-        lines!(axis, [a+b, a+b+c]; color=cell_color)
-    end
-
-    if hide_axes
-        hidespines!(axis)
-        hidedecorations!(axis)
-    end
-
-    return axis
-end
-
-
-## Trajectory vizualisations
-
-"""
-    draw_trajectory(traj::AbstractVector; kwargs...)
-
-Draw trajectory with Makie.
-You need to load Makie backend for visualisation to work.
-
-`kwords` are passed to Makie to control drawing.
-
-See also `draw_system` and `draw_trajectory!`.
-
-# Kwords
-
-- `draw_cell=true`    : draw cell
-- `cell_color=:cyan`  : cell color
-- `scale=1.0`         : Scale atom sizes
-- `hide_axes=false`   : hide x-,y- and z-axes
-- any kword suported by `Makie.mesh`
-
-# Examples
-```julia
-using GLMakie
-using AtomsBase
-using AtomsBuilder
-using AtomsView
-
-traj = map( 1:10 ) do d 
-    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
-end
-draw_trajectory(traj)
-
-# draw trajectory with cell
-draw_trajectory(traj; draw_cell=true)
-```
-"""
-function draw_trajectory(traj::AbstractVector; kwargs...)
-    fig = Figure(size = (1000, 1000))
-    sfig, i = draw_trajectory!(fig[1,1], traj; kwargs...)
-    sl = trajectory_controls!(fig[2,1], i, length(traj))
-    return fig
-end
-
-"""
-    draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::AbstractVector; kwargs...)
-
-Draw trajectory with Makie.
-You need to load Makie backend for visualisation to work.
-
-`kwords` are passed to Makie to control drawing.
-
-See also `draw_system` and `draw_trajectory!`.
-
-# Kwords
-
-- `draw_cell=true`    : draw cell
-- `cell_color=:cyan`  : cell color
-- `scale=1.0`         : Scale atom sizes
-- `hide_axes=false`   : hide x-,y- and z-axes
-- any kword suported by `Makie.mesh`
-
-# Examples
-```julia
-using GLMakie
-using AtomsBase
-using AtomsBuilder
-using AtomsView
-
-traj = map( 1:10 ) do d 
-    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
-end
-
-fig = Figure()
-
-# draw trajectory 
-fig_11, i = draw_trajectory!(fig[1,1], traj; draw_cell=true, hide_axes=true)
-
-# show figure
-display(fig)
-
-# set trajectory frame to 7
-i[] = 7
-```
-"""
-function draw_trajectory!(fig::Union{GridPosition,GridSubposition}, traj::AbstractVector; kwargs...)
-    axs = Axis3(fig, aspect = :data, perspectiveness = 0.5)
-    i = Observable{Int}(1)
-    draw_system!(axs, traj[i[]]; kwargs...)
-    on( i ) do i
-        empty!(axs)
-        draw_system!(axs, traj[i]; kwargs...)
-    end
-    return fig, i
-end
-
-# Draw control slider for trajectory draw.
-# This is experimental and might not work that well.
-# In the future this could be improved
-function trajectory_controls!(fig::Union{GridPosition,GridSubposition}, i::Observable, max_value::Int)
-    sl = SliderGrid(
-        fig,
-        (label = "Frame", range=1:max_value)
-    )
-    on(sl.sliders[1].value) do j
-        i[] = j
-    end
-    return sl
-end
-
-
 ## Recipe way
 
 
-Makie.@recipe(PlotSystem) do scene
+Makie.@recipe(DrawSystem) do scene
     Attributes(
         aspect          = :data,
         cell_color      = :black,
@@ -244,12 +12,12 @@ Makie.@recipe(PlotSystem) do scene
 end
 
 # prefer 3D plot
-Makie.preferred_axis_type(::PlotSystem) = LScene
+Makie.preferred_axis_type(::DrawSystem) = LScene
 
 
-function Makie.plot!(ps::PlotSystem{<:Tuple{AbstractSystem{3}}})
+function Makie.plot!(ds::DrawSystem{<:Tuple{AbstractSystem{3}}})
 
-    sys = ps[1]
+    sys = ds[1]
 
     # predefine atom data
     vdw = Observable(Float64[])
@@ -271,14 +39,14 @@ function Makie.plot!(ps::PlotSystem{<:Tuple{AbstractSystem{3}}})
         empty!(points[])
 
         # update without triggering new draw
-        for i in 1:length(sys)
-            r = position(sys,i)
+        for at in to_value(sys)
+            r = position(at)
             point = Point3f( ustrip.(u"Å", r) )
-            atom_number = atomic_number(sys,i)
+            atom_number = atomic_number(at)
             col = parse(Colorant, get(elements, atom_number, 109).cpk_hex )
             vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
             push!(points[], point)
-            push!(vdw[], vdw_rad * ps.scale[])
+            push!(vdw[], vdw_rad * ds.scale[])
             push!(colors[], col)
         end
 
@@ -313,32 +81,99 @@ function Makie.plot!(ps::PlotSystem{<:Tuple{AbstractSystem{3}}})
     function update_sizes(scale)
         empty!(vdw[])
         for i in 1:length(sys[])
-            atom_number = atomic_number(sys[],i)
-            vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
-            push!(vdw[], vdw_rad * scale)
+           atom_number = atomic_number(sys[],i)
+           vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
+           push!(vdw[], vdw_rad * scale)
         end
         vdw[] = vdw[]
     end
 
 
-    # connect `update_plot` so that it is called whenever
-    # `sys` or `scale` change
+    # connect updates 
     onany(update_atoms, sys)
-    onany(update_cell, sys, ps.draw_cell, ps.cell_color)
-    onany(update_sizes, ps.scale)
+    onany(update_cell, sys, ds.draw_cell, ds.cell_color)
+    onany(update_sizes, ds.scale)
 
-    # then call it once manually populate `points`, `vdw` and `colors`
+    # call update functions once to populate data
     update_atoms(sys[])
-    update_cell(sys[], ps.draw_cell[], ps.cell_color[])
+    update_cell(sys[], ds.draw_cell[], ds.cell_color[])
 
     # draw atoms
-    meshscatter!(ps, points; markersize=vdw, color=colors)
+    meshscatter!(ds, points; markersize=vdw, color=colors)
 
     # draw cell
-    lines!(ps, l1; color=ps.cell_color)
-    lines!(ps, l2; color=ps.cell_color)
-    lines!(ps, l3; color=ps.cell_color)
-    lines!(ps, l4; color=ps.cell_color)
+    lines!(ds, l1; color=ds.cell_color)
+    lines!(ds, l2; color=ds.cell_color)
+    lines!(ds, l3; color=ds.cell_color)
+    lines!(ds, l4; color=ds.cell_color)
     
-    return ps
+    return ds
 end
+
+
+##
+
+@doc """
+    drawsystem(system; kwargs...)
+    drawsystem!(f, system; kwargs...)
+
+Draw a [`AtomsBase`](@ref) [`AbstractSystem`](@ref).
+
+You can also give kwargs that Makies [`meshscatter`](@ref) supports.
+
+# Kwords
+
+- `draw_cell=false`    : draw cell
+- `cell_color=:black`  : cell color
+- `scale=1.0`          : Scale atom sizes
+
+# Examples
+
+Draw a system
+
+```julia
+using GLMakie
+using AtomsBuilder
+using AtomsView
+
+system = bulk(:Cu) * (4,4,4)
+
+f = drawsystem(system; draw_cell=true, scale=1.0, cell_color=:black)
+
+# set atoms sizes to 70% of Van der Waals sizes
+f.plot.scale[] = 0.7
+
+# set cell color to teal
+f.plot.cell_color[] = :teal
+
+# hide cell
+f.plot.draw_cell[] = false
+
+# draw to to existing figure
+fig = Figure()
+drawsystem!(fig[1,1], system)
+```
+
+
+Draw trajectory
+
+```julia
+using GLMakie
+using AtomsBase
+using AtomsBuilder
+using AtomsView
+
+traj = map( 1:10 ) do d 
+    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
+end
+
+# Draw first frame from traj
+t = Observable(traj[1])
+f = draw_trajectory(t; draw_cell=true)
+
+# set figure to traj[7]
+t[] = traj[7]
+```
+""" drawsystem
+
+@doc (@doc drawsystem) drawsystem!
