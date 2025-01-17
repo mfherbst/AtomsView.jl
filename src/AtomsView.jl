@@ -1,5 +1,4 @@
 module AtomsView
-using ArgCheck
 using AtomsBase
 using Bio3DView
 using Colors
@@ -8,11 +7,9 @@ using PeriodicTable
 using Unitful
 const AbstractSystem = AtomsBase.AbstractSystem
 
-export draw_system
-export draw_system!
+
 export visualize_structure
-export draw_trajectory
-export draw_trajectory!
+
 
 
 include("vdw_data.jl")
