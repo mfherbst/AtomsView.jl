@@ -150,8 +150,10 @@ f.plot.cell_color[] = :teal
 f.plot.draw_cell[] = false
 
 # draw to to existing figure
+# hide axis and use black background
 fig = Figure()
-drawsystem!(fig[1,1], system)
+lsc = LScene(fig[1,1]; show_axis=false, scenekw = (backgroundcolor=:black, clear=true) )
+drawsystem!(lsc, system)
 ```
 
 
@@ -169,7 +171,7 @@ end
 
 # Draw first frame from traj
 t = Observable(traj[1])
-f = draw_trajectory(t; draw_cell=true)
+f = drawsystem(t; draw_cell=true)
 
 # set figure to traj[7]
 t[] = traj[7]

@@ -16,7 +16,7 @@ using AtomsBuilder
 using AtomsView
 
 system = bulk(:Cu) * (4,4,4)
-draw_system(system; draw_cell=true)
+drawsystem(system; draw_cell=true)
 ```
 
 Visualize a trajectory
@@ -29,5 +29,11 @@ using AtomsView
 traj = map( 1:10 ) do d 
     FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
 end
-draw_trajectory(traj)
+
+# Draw first frame from traj
+t = Observable(traj[1])
+f = drawsystem(t; draw_cell=true)
+
+# set figure to traj[7]
+t[] = traj[7]
 ```
