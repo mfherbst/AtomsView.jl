@@ -22,10 +22,14 @@ using Unitful
             :H => [0.0, 0.0, 0.0]u"Å",
             :O => [0.0, 0.0, 1.0]u"Å"
         ])
-        fig, sc, pl = drawsystem(sys)
+        t = Observable(sys)
+        fig, sc, pl = drawsystem(t; draw_cell=true)
         @test fig isa Makie.Figure
         @test sc isa LScene
         @test pl isa Plot
+        pl.draw_cell[] = false
+        pl.scale[] = 0.5
+        t[] = t[]
     end
 end
 
