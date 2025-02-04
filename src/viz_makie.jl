@@ -175,15 +175,23 @@ f = drawsystem(t; draw_cell=true)
 
 # set figure to traj[7]
 t[] = traj[7]
+```
 
 # Known issues
 
-When changing the system to a system with more atoms, some of the atoms will not be drawn.
-This is a bug in Makie. You can work around this by creating the figure by starting with
-the system with the most atoms.
+1. When changing the system to a system with more atoms, some of the atoms will not be drawn. This is a bug in Makie. You can work around this by creating the figure by starting with the system with the most atoms.
 
-If you use subfigure as an input to `drawsystem!`, the plot can crash.
-It is recommended to use LScene instead (see the example above).
+2. If you use subfigure as an input to `drawsystem!`, the plot can crash.
+
+```julia
+fig = Figure()
+drawsystem!(fig[1,1], sys) # this fails
+```
+Use `LScene` instead
+```julia
+fig = Figure()
+sc  = LScene(fig[1,1])
+drawsystem!(sc, sys) # this works
 ```
 """ drawsystem
 
