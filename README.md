@@ -16,7 +16,7 @@ using AtomsBuilder
 using AtomsView
 
 system = bulk(:Cu) * (4,4,4)
-drawsystem(system; draw_cell=true)
+drawsystem(system; draw_cell=true, scale=1.0)
 ```
 
 Visualize a trajectory

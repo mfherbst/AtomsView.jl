@@ -117,9 +117,9 @@ end
     drawsystem(system; kwargs...)
     drawsystem!(f, system; kwargs...)
 
-Draw a [`AtomsBase`](@ref) [`AbstractSystem`](@ref).
+Draw a `AtomsBase` `AbstractSystem`.
 
-You can also give kwargs that Makies [`meshscatter`](@ref) supports.
+You can also give kwargs that Makies `meshscatter` supports.
 
 # Kwords
 
@@ -175,6 +175,12 @@ f = drawsystem(t; draw_cell=true)
 
 # set figure to traj[7]
 t[] = traj[7]
+
+# Known issues
+
+When changing the system to a system with more atoms, some of the atoms will not be drawn.
+This is a bug in Makie. You can work around this by creating the figure by starting with
+the system with the most atoms.
 ```
 """ drawsystem
 
