@@ -181,6 +181,9 @@ t[] = traj[7]
 When changing the system to a system with more atoms, some of the atoms will not be drawn.
 This is a bug in Makie. You can work around this by creating the figure by starting with
 the system with the most atoms.
+
+If you use subfigure as an input to `drawsystem!`, the plot can crash.
+It is recommended to use LScene instead (see the example above).
 ```
 """ drawsystem
 
