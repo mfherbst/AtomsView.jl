@@ -39,10 +39,10 @@ function Makie.plot!(ds::DrawSystem{<:Tuple{AbstractSystem{3}}})
         empty!(points[])
 
         # update without triggering new draw
-        for at in to_value(sys)
-            r = position(at)
+        for i in 1:length( to_value(sys) )
+            r = position(to_value(sys), i)
             point = Point3f( ustrip.(u"Å", r) )
-            atom_number = atomic_number(at)
+            atom_number = atomic_number(to_value(sys), i)
             col = parse(Colorant, get(elements, atom_number, 109).cpk_hex )
             vdw_rad = ustrip(u"Å", get(vdw_radius, atom_number, 2.5u"Å") )
             push!(points[], point)
