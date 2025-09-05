@@ -1,5 +1,6 @@
 using AtomsBase
 using AtomsView
+using Makie
 using Test
 using Unitful
 
@@ -15,6 +16,20 @@ using Unitful
         for mime in ("text/plain", "text/html")
             visualize_structure(system, MIME(mime))
         end
+    end
+    @testset "Makie visualisations" begin
+        sys = isolated_system([
+            :H => [0.0, 0.0, 0.0]u"Å",
+            :O => [0.0, 0.0, 1.0]u"Å"
+        ])
+        t = Observable(sys)
+        fig, sc, pl = drawsystem(t; draw_cell=true)
+        @test fig isa Makie.Figure
+        @test sc isa LScene
+        @test pl isa Plot
+        pl.draw_cell[] = false
+        pl.scale[] = 0.5
+        t[] = t[]
     end
 end
 

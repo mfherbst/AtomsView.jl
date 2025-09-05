@@ -1,11 +1,19 @@
 module AtomsView
 using AtomsBase
 using Bio3DView
+using Colors
+using Makie
+using PeriodicTable
 using Unitful
-AbstractSystem = AtomsBase.AbstractSystem
+const AbstractSystem = AtomsBase.AbstractSystem
+
 
 export visualize_structure
 
+
+
+include("vdw_data.jl")
+include("viz_makie.jl")
 
 """
 Fallback visualisation function. Returns nothing.
