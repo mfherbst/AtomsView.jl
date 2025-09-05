@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · AtomsView.jl</title><meta name="title" content="Home · AtomsView.jl"/><meta property="og:title" content="Home · AtomsView.jl"/><meta property="twitter:title" content="Home · AtomsView.jl"/><meta name="description" content="Documentation for AtomsView.jl."/><meta property="og:description" content="Documentation for AtomsView.jl."/><meta property="twitter:description" content="Documentation for AtomsView.jl."/><meta property="og:url" content="https://mfherbst.github.io/AtomsView.jl/"/><meta property="twitter:url" content="https://mfherbst.github.io/AtomsView.jl/"/><link rel="canonical" href="https://mfherbst.github.io/AtomsView.jl/"/><script data-outdated-warner src="assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="search_index.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href>AtomsView.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Home</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Home</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Home</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/mfherbst/AtomsView.jl/blob/master/docs/src/index.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="AtomsView"><a class="docs-heading-anchor" href="#AtomsView">AtomsView</a><a id="AtomsView-1"></a><a class="docs-heading-anchor-permalink" href="#AtomsView" title="Permalink"></a></h1><p><a href="https://github.com/mfherbst/AtomsView.jl">AtomsView</a> is a package of tools for visualising <a href="https://github.com/JuliaMolSim/AtomsBase.jl"><code>AtomsBase</code></a>-compatible structures. The functionality is still limited and interfaces unstable. Expect them to change at any time.</p><ul><li><a href="#AtomsView.drawsystem"><code>AtomsView.drawsystem</code></a></li><li><a href="#AtomsView.drawsystem!"><code>AtomsView.drawsystem!</code></a></li><li><a href="#AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, MIME{Symbol(&quot;text/html&quot;)}}"><code>AtomsView.visualize_structure</code></a></li><li><a href="#AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, Any}"><code>AtomsView.visualize_structure</code></a></li></ul><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="AtomsView.drawsystem" href="#AtomsView.drawsystem"><code>AtomsView.drawsystem</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">drawsystem(system; kwargs...)
+drawsystem!(f, system; kwargs...)</code></pre><p>Draw a <code>AtomsBase</code> <code>AbstractSystem</code>.</p><p>You can also give kwargs that Makies <code>meshscatter</code> supports.</p><p><strong>Kwords</strong></p><ul><li><code>draw_cell=false</code>    : draw cell</li><li><code>cell_color=:black</code>  : cell color</li><li><code>scale=1.0</code>          : Scale atom sizes</li></ul><p><strong>Examples</strong></p><p>Draw a system</p><pre><code class="language-julia hljs">using GLMakie
+using AtomsBuilder
+using AtomsView
+
+system = bulk(:Cu) * (4,4,4)
+
+f = drawsystem(system; draw_cell=true, scale=1.0, cell_color=:black)
+
+# set atoms sizes to 70% of Van der Waals sizes
+f.plot.scale[] = 0.7
+
+# set cell color to teal
+f.plot.cell_color[] = :teal
+
+# hide cell
+f.plot.draw_cell[] = false
+
+# draw to to existing figure
+# hide axis and use black background
+fig = Figure()
+lsc = LScene(fig[1,1]; show_axis=false, scenekw = (backgroundcolor=:black, clear=true) )
+drawsystem!(lsc, system)</code></pre><p>Draw trajectory</p><pre><code class="language-julia hljs">using GLMakie
+using AtomsBase
+using AtomsBuilder
+using AtomsView
+
+traj = map( 1:10 ) do d 
+    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
+end
+
+# Draw first frame from traj
+t = Observable(traj[1])
+f = drawsystem(t; draw_cell=true)
+
+# set figure to traj[7]
+t[] = traj[7]</code></pre><p><strong>Known issues</strong></p><ol><li><p>When changing the system to a system with more atoms, some of the atoms will not be drawn. This is a bug in Makie. You can work around this by creating the figure by starting with the system with the most atoms.</p></li><li><p>If you use subfigure as an input to <code>drawsystem!</code>, the plot can crash.</p></li></ol><pre><code class="language-julia hljs">fig = Figure()
+drawsystem!(fig[1,1], sys) # this fails</code></pre><p>Use <code>LScene</code> instead</p><pre><code class="language-julia hljs">fig = Figure()
+sc  = LScene(fig[1,1])
+drawsystem!(sc, sys) # this works</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/mfherbst/AtomsView.jl/blob/d522ec2347a384440368c16e1f98f28069a380b3/src/viz_makie.jl#L116-L196">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="AtomsView.drawsystem!" href="#AtomsView.drawsystem!"><code>AtomsView.drawsystem!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">drawsystem(system; kwargs...)
+drawsystem!(f, system; kwargs...)</code></pre><p>Draw a <code>AtomsBase</code> <code>AbstractSystem</code>.</p><p>You can also give kwargs that Makies <code>meshscatter</code> supports.</p><p><strong>Kwords</strong></p><ul><li><code>draw_cell=false</code>    : draw cell</li><li><code>cell_color=:black</code>  : cell color</li><li><code>scale=1.0</code>          : Scale atom sizes</li></ul><p><strong>Examples</strong></p><p>Draw a system</p><pre><code class="language-julia hljs">using GLMakie
+using AtomsBuilder
+using AtomsView
+
+system = bulk(:Cu) * (4,4,4)
+
+f = drawsystem(system; draw_cell=true, scale=1.0, cell_color=:black)
+
+# set atoms sizes to 70% of Van der Waals sizes
+f.plot.scale[] = 0.7
+
+# set cell color to teal
+f.plot.cell_color[] = :teal
+
+# hide cell
+f.plot.draw_cell[] = false
+
+# draw to to existing figure
+# hide axis and use black background
+fig = Figure()
+lsc = LScene(fig[1,1]; show_axis=false, scenekw = (backgroundcolor=:black, clear=true) )
+drawsystem!(lsc, system)</code></pre><p>Draw trajectory</p><pre><code class="language-julia hljs">using GLMakie
+using AtomsBase
+using AtomsBuilder
+using AtomsView
+
+traj = map( 1:10 ) do d 
+    FastSystem( rattle!(bulk(:Cu) * (4,4,4), 0.1*d) )
+end
+
+# Draw first frame from traj
+t = Observable(traj[1])
+f = drawsystem(t; draw_cell=true)
+
+# set figure to traj[7]
+t[] = traj[7]</code></pre><p><strong>Known issues</strong></p><ol><li><p>When changing the system to a system with more atoms, some of the atoms will not be drawn. This is a bug in Makie. You can work around this by creating the figure by starting with the system with the most atoms.</p></li><li><p>If you use subfigure as an input to <code>drawsystem!</code>, the plot can crash.</p></li></ol><pre><code class="language-julia hljs">fig = Figure()
+drawsystem!(fig[1,1], sys) # this fails</code></pre><p>Use <code>LScene</code> instead</p><pre><code class="language-julia hljs">fig = Figure()
+sc  = LScene(fig[1,1])
+drawsystem!(sc, sys) # this works</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/mfherbst/AtomsView.jl/blob/d522ec2347a384440368c16e1f98f28069a380b3/src/viz_makie.jl#L198">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, Any}" href="#AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, Any}"><code>AtomsView.visualize_structure</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p>Fallback visualisation function. Returns nothing.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/mfherbst/AtomsView.jl/blob/d522ec2347a384440368c16e1f98f28069a380b3/src/AtomsView.jl#L18-L20">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, MIME{Symbol(&quot;text/html&quot;)}}" href="#AtomsView.visualize_structure-Tuple{AtomsBase.AbstractSystem, MIME{Symbol(&quot;text/html&quot;)}}"><code>AtomsView.visualize_structure</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p>Produce some text/html code which allows to interactively view the system. Currently uses Bio3DView and some kwargs can be used to customise the representation. Note that the backend as well as interface is likely going to change in the future.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/mfherbst/AtomsView.jl/blob/d522ec2347a384440368c16e1f98f28069a380b3/src/AtomsView.jl#L51-L55">source</a></section></article></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Friday 5 September 2025 09:32">Friday 5 September 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
